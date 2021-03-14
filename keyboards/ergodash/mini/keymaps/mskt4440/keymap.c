@@ -43,13 +43,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_LOWER] = LAYOUT(
 // |--------+--------+--------+--------+--------+--------+--------+--------+-----+--------+--------+--------+--------+--------+--------+--------+--------|
+    KC_TILD, KC_1,    KC_2,    KC_3,   KC_4,     KC_5,    XXXXXXX,                         XXXXXXX, KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    _______, \
+// |--------+--------+--------+--------+--------+--------+--------+--------+-----+--------+--------+--------+--------+--------+--------+--------+--------|
     KC_GRV,  KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, XXXXXXX,                         XXXXXXX, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, _______, \
 // |--------+--------+--------+--------+--------+--------+--------+--------+-----+--------+--------+--------+--------+--------+--------+--------+--------|
-    KC_TILD, KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    XXXXXXX,                         XXXXXXX, KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    _______, \
+    _______, XXXXXXX, KC_LBRC, KC_RBRC, KC_LCBR, KC_RCBR, XXXXXXX,                         XXXXXXX, KC_MINS, KC_EQL,  KC_UNDS, KC_PLUS, XXXXXXX, _______, \
 // |--------+--------+--------+--------+--------+--------+--------+--------+-----+--------+--------+--------+--------+--------+--------+--------+--------|
-    KC_LPRN, KC_LT,   KC_LCBR, KC_LBRC, KC_UNDS, KC_PLUS, XXXXXXX,                         XXXXXXX, KC_MINS, KC_EQL,  KC_RBRC, KC_RCBR, KC_GT,   KC_RPRN, \
-// |--------+--------+--------+--------+--------+--------+--------+--------+-----+--------+--------+--------+--------+--------+--------+--------+--------|
-    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          _______, _______, _______,       KC_ENT,  _______, _______,          XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX  \
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          _______, _______, _______,       KC_DEL,  _______, _______,          XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX  \
 // |--------+--------+--------+--------+--------+--------+--------+--------+-----+--------+--------+--------+--------+--------+--------+--------+--------|
   ),
 
@@ -67,11 +67,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_ADJUST] = LAYOUT(
 // |--------+--------+--------+--------+--------+--------+--------+--------+-----+--------+--------+--------+--------+--------+--------+--------+--------|
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
+// |--------+--------+--------+--------+--------+--------+--------+--------+-----+--------+--------+--------+--------+--------+--------+--------+--------|
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
+// |--------+--------+--------+--------+--------+--------+--------+--------+-----+--------+--------+--------+--------+--------+--------+--------+--------|
     LOCK,    _______, _______, _______, _______, _______, XXXXXXX,                         XXXXXXX, KC_BRID, KC_BRIU, KC_MUTE, KC_VOLD, KC_VOLU, _______, \
-// |--------+--------+--------+--------+--------+--------+--------+--------+-----+--------+--------+--------+--------+--------+--------+--------+--------|
-    _______, KC_BTN4, KC_BTN3, KC_BTN2, KC_BTN1, KC_BTN5, XXXXXXX,                         XXXXXXX, KC_MS_L, KC_MS_D, KC_MS_U,KC_MS_R,  _______, _______, \
-// |--------+--------+--------+--------+--------+--------+--------+--------+-----+--------+--------+--------+--------+--------+--------+--------+--------|
-    _______, _______, _______, _______, _______, _______, XXXXXXX,                         XXXXXXX, _______, _______, _______, _______, _______, _______, \
 // |--------+--------+--------+--------+--------+--------+--------+--------+-----+--------+--------+--------+--------+--------+--------+--------+--------|
     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          _______, _______, _______,       _______, _______, _______,          XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX  \
 // |--------+--------+--------+--------+--------+--------+--------+--------+-----+--------+--------+--------+--------+--------+--------+--------+--------|
@@ -79,44 +79,25 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 };
 
-static bool lower_pressed = false;
-static uint16_t lower_pressed_time = 0;
-static bool raise_pressed = false;
-static uint16_t raise_pressed_time = 0;
-
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case LOWER:
       if (record->event.pressed) {
-        lower_pressed = true;
-        lower_pressed_time = record->event.time;
         layer_on(_LOWER);
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
       } else {
         layer_off(_LOWER);
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
-        if (lower_pressed && (TIMER_DIFF_16(record->event.time, lower_pressed_time) < LAYER_TAPPING_TERM)) {
-          register_code(KC_TAB);
-          unregister_code(KC_TAB);
-        }
-        lower_pressed = false;
       }
       return false;
       break;
     case RAISE:
       if (record->event.pressed) {
-        raise_pressed = true;
-        raise_pressed_time = record->event.time;
         layer_on(_RAISE);
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
       } else {
         layer_off(_RAISE);
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
-        if (raise_pressed && (TIMER_DIFF_16(record->event.time, raise_pressed_time) < LAYER_TAPPING_TERM)) {
-          register_code(KC_ESC);
-          unregister_code(KC_ESC);
-        }
-        raise_pressed = false;
       }
       return false;
       break;
@@ -127,12 +108,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         layer_off(_ADJUST);
       }
       return false;
-      break;
-    default:
-      if (record->event.pressed) {
-        lower_pressed = false;
-        raise_pressed = false;
-      }
       break;
   }
   return true;
